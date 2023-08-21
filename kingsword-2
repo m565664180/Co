@@ -1,0 +1,79 @@
+import os
+import time
+import random
+
+import requests
+import io
+import hashlib
+
+from PIL import Image
+from selenium import webdriver
+
+import signal
+
+from glob import glob
+import openpyxl
+
+##############
+# 参数设置
+##############
+
+# 要获取的图片数量
+number_of_images = 9
+GET_IMAGE_TIMEOUT = 2
+SLEEP_BETWEEN_INTERACTIONS = 0.1
+SLEEP_BEFORE_MORE = 5
+IMAGE_QUALITY = 85
+
+output_path = "C:\\Users\\Dr Lau\\Desktop\\KeywordImages\\"
+
+# 获取已记录的术语。
+dirs = glob(output_path + "*")
+dirs = [dir.split("\\")[-1].replace("_", " ") for dir in dirs]
+
+# 打开关键词调查表
+workbook = openpyxl.load_workbook("C:\\Users\\Dr Lau\\Desktop\\关键词调查表.xlsx")
+sheet = workbook.active
+
+# 获取搜索关键词
+search_terms = [row[0].value for row in sheet.iter_rows(min_row=2, max_col=1, values_only=True) if row[0].value and row[0].value not in dirs]
+
+##########
+# 抓取图片
+##########
+
+wd = webdriver.Chrome()
+
+# 信用：
+# https://stackoverflow.com/a/22348885
+class timeout:
+    def __init__(self, seconds=1, error_message="Timeout"):
+        self.seconds = seconds
+        self.error_message = error_message
+
+    def handle_timeout(self, signum, frame):
+        raise TimeoutError(self.error_message)
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
+
+def fetch_image_urls(
+    query: str,
+    max_links_to_fetch: int,
+    wd: webdriver,
+    sleep_between_interactions: int = 1,
+):
+    # ... 这里是抓取图片链接的函数 ...
+
+def persist_image(folder_path: str, url: str, filename: str):
+    # ... 这里是保存图片的函数 ...
+
+def search_and_download(search_term: str, target_path="./images", number_images=5):
+    # ... 这里是搜索和下载图片的函数 ...
+
+for term in search_terms:
+    search_and_download(term, output_path, number_of_images)
